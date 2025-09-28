@@ -120,7 +120,7 @@ function validateTweetText(text: string): void {
  * @returns Promise<string> The ID of the posted tweet
  * @throws Error if posting fails
  */
-export async function postTweet(text: string): Promise<string> {
+export async function postTweet(text: string, replyToId?: string | null): Promise<string> {
   try {
     console.log('🐦 Preparing to post tweet...');
     
@@ -131,9 +131,18 @@ export async function postTweet(text: string): Promise<string> {
     // Get Twitter client
     const client = getTwitterClient();
 
+    // Prepare tweet options
+    const tweetOptions: any = { text };
+    
+    // Add reply context if this is a thread tweet
+    if (replyToId) {
+      tweetOptions.reply = { in_reply_to_tweet_id: replyToId };
+      console.log(`🧵 Posting as thread reply to tweet ${replyToId}`);
+    }
+
     // Post the tweet using v2 API
     console.log('📤 Posting tweet to X...');
-    const tweet = await client.v2.tweet(text);
+    const tweet = await client.v2.tweet(tweetOptions);
 
     console.log('✅ Tweet posted successfully!');
     console.log(`🆔 Tweet ID: ${tweet.data.id}`);

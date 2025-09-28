@@ -66,8 +66,8 @@ async function authenticateTwitter() {
     console.log(`X_ACCESS_TOKEN=${accessToken}`);
     console.log(`X_ACCESS_SECRET=${accessSecret}`);
     console.log('\n💡 Your .env file should now look like this:');
-    console.log('X_API_KEY=X29MUWwtbXV4YmhUWndlY0VoTzE6MTpjaQ');
-    console.log('X_API_SECRET=mBVpodB4jfUlyWjjr2-ecCxp-BrybNSYQYsYAhpS2R1znRmmWE');
+    console.log('X_API_KEY=your_api_key_here');
+    console.log('X_API_SECRET=your_api_secret_here');
     console.log(`X_ACCESS_TOKEN=${accessToken}`);
     console.log(`X_ACCESS_SECRET=${accessSecret}`);
     console.log('POSTS_PER_RUN=1');
