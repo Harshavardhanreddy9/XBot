@@ -1,182 +1,230 @@
-# 🤖 XBot - AI News Twitter Bot
+# XBot - AI-Powered Twitter Bot
 
-An automated Twitter bot that fetches AI and tech news from RSS feeds and posts them to X (Twitter) with human-like templates and hashtags.
+An intelligent Twitter bot that automatically curates and posts tech news with AI-generated summaries and thread support.
 
-## ✨ Features
+## 🚀 Features
 
-- 📰 **RSS Feed Integration** - Fetches from 4 AI/tech RSS sources
-- 🎯 **Smart Content Selection** - Deduplicates and selects top headlines
-- 📝 **Human-like Templates** - 8 different tweet templates with rotating styles
-- 🏷️ **Auto Hashtags** - Adds relevant AI/tech hashtags automatically
-- ⏰ **Smart Delays** - Random delays between multiple posts
-- 🔒 **Secure** - All credentials stored in environment variables
+### 📰 Content Curation
+- **RSS Feed Integration**: Fetches headlines from multiple tech/AI sources
+  - TechCrunch AI tag
+  - VentureBeat AI
+  - Hacker News AI search
+  - Google AI blog
+- **Smart Selection**: Sorts by date, removes duplicates, picks top N items
+- **Article Extraction**: Full-text extraction with fallback to RSS titles
 
-## 🚀 Quick Start
+### 🧵 Dual Posting Modes
+- **Single Posts** (85% of the time): Complete summary in one tweet
+- **Thread Posts** (15% of the time): 2-tweet threads
+  - Tweet 1: Humanized summary
+  - Tweet 2: Key detail (metric/name) + source
 
-### 1. Clone and Install
+### 🤖 AI-Powered Content Generation
+- **Heuristic Summarization**: Custom rules-based summarization
+- **AI Provider Support**: Optional OpenAI GPT or Ollama integration
+- **Smart Fallbacks**: RSS title + context when extraction fails
 
+### 🎭 Human-Like Persona
+- **Voice Openers**: "Quick take:", "Notable:", "If you follow AI:", etc.
+- **Rhetorical Devices**: Questions, contrasts, "so what" lines
+- **Closers**: "Thoughts?", "Worth watching.", "Big if true."
+- **Emoji Support**: Optional random emojis (10-15% chance)
+
+### 🛡️ Quality Controls
+- **Clickbait Filtering**: Removes "shocking", "insane", "amazing" language
+- **Claims Validation**: Replaces unsupported claims with cautious language
+- **Plagiarism Prevention**: Limits consecutive words to 8 max
+- **Length Management**: Hard 280-character limit with URL space
+- **Emoji Limiting**: Maximum 1 emoji per tweet
+
+### 🔧 Technical Features
+- **Thread Support**: Proper reply chains for multi-tweet threads
+- **Jitter Delays**: Random 0-30s delays between multiple posts
+- **Error Handling**: Graceful fallbacks and retry logic
+- **Rate Limit Management**: Respects Twitter API limits
+- **Comprehensive Testing**: Unit tests for all quality controls
+
+## 📦 Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Harshavardhanreddy9/XBot.git
+   cd XBot
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Fill in your Twitter API credentials in `.env`:
+   ```env
+   # Twitter API Credentials
+   X_API_KEY=your_api_key_here
+   X_API_SECRET=your_api_secret_here
+   X_ACCESS_TOKEN=your_access_token_here
+   X_ACCESS_SECRET=your_access_secret_here
+   
+   # Bot Configuration
+   POSTS_PER_RUN=1
+   
+   # Optional AI Provider
+   # AI_PROVIDER=openai  # or ollama
+   # OPENAI_API_KEY=sk-your-key-here
+   # OLLAMA_HOST=http://localhost:11434
+   ```
+
+4. **Authenticate with Twitter**
+   ```bash
+   npm run auth
+   ```
+
+## 🚀 Usage
+
+### Basic Usage
 ```bash
-git clone <your-repo-url>
-cd XBot
-npm install
-```
-
-### 2. Environment Setup
-
-Create a `.env` file in the root directory:
-
-```bash
-# Twitter API Credentials
-X_API_KEY=your_api_key_here
-X_API_SECRET=your_api_secret_here
-X_ACCESS_TOKEN=your_access_token_here
-X_ACCESS_SECRET=your_access_secret_here
-
-# Bot Configuration
-POSTS_PER_RUN=1
-```
-
-### 3. Get Twitter API Credentials
-
-1. Go to [Twitter Developer Portal](https://developer.twitter.com/en/portal/dashboard)
-2. Create a new app or use existing one
-3. Go to "Keys and Tokens" tab
-4. Copy:
-   - **API Key and Secret** (Consumer Keys)
-   - **Access Token and Secret** (Authentication Tokens)
-
-### 4. Run the Bot
-
-```bash
-# Development mode
+# Run the bot once
 npm run dev
 
-# Build and run
+# Build and run production
 npm run build
 npm start
+```
+
+### Testing
+```bash
+# Test content pipeline (no posting)
+npm run test
+
+# Test writer quality controls
+npm run test-writer
+
+# Test thread functionality
+npm run test-thread
+```
+
+## 📊 Configuration
+
+### Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `POSTS_PER_RUN` | Number of posts per run | `1` |
+| `AI_PROVIDER` | AI provider: `openai`, `ollama`, or unset for heuristic | `unset` |
+| `MIN_ARTICLE_LENGTH` | Minimum article length before fallback | `400` |
+| `JITTER_MIN` | Minimum delay between posts (seconds) | `0` |
+| `JITTER_MAX` | Maximum delay between posts (seconds) | `30` |
+| `HASHTAG_NONE_CHANCE` | Probability of no hashtags | `0.3` |
+| `ENABLE_EMOJIS` | Enable random emoji usage | `false` |
+| `EMOJI_CHANCE` | Probability of emoji when enabled | `0.12` |
+| `ENABLE_CLOSERS` | Enable random closers | `true` |
+| `CLOSER_CHANCE` | Probability of closer when enabled | `0.3` |
+
+## 🧵 Thread Mode
+
+The bot has a **15% chance** of creating 2-tweet threads:
+
+### Thread Structure
+1. **Tweet 1**: Humanized summary (under 240 chars)
+2. **Tweet 2**: Key detail + source domain (under 240 chars)
+
+### Key Detail Extraction
+- **Metrics**: `$1.2B`, `95%`, `2.5M users`
+- **Company Names**: `OpenAI`, `Google`, `Tesla`
+- **Product Names**: `GPT-5`, `Gemini 2.0`
+- **Version Numbers**: `v2.0`, `version 3.1`
+
+### Example Thread
+```
+Tweet 1: "Quick take: OpenAI raises $1.2B in Series C funding led by Microsoft. This could accelerate AI research and development significantly. — techcrunch"
+
+Tweet 2: "Key metric: $1.2B — techcrunch"
+```
+
+## 🛡️ Quality Controls
+
+### Content Filtering
+- **Clickbait Removal**: Filters out sensational language
+- **Claims Validation**: Replaces absolute claims with cautious language
+- **Plagiarism Prevention**: Limits consecutive word copying to 8 words max
+
+### Length Management
+- **Hard 280-char limit**: Ensures URL fits in every tweet
+- **Smart Trimming**: Prioritizes opener, then middle sentences
+- **URL Space Reservation**: Reserves 30 chars for URL + source
+
+### Persona Controls
+- **Opener Variety**: 8-10 different voice openers
+- **Closer Options**: 4-5 different closers
+- **Emoji Limiting**: Maximum 1 emoji per tweet
+- **No Repetition**: Prevents consecutive same openers
+
+## 🧪 Testing
+
+### Unit Tests
+```bash
+# Test writer quality controls
+npm run test-writer
+
+# Test thread functionality
+npm run test-thread
+
+# Test full pipeline
+npm run test
+```
+
+### Test Coverage
+- ✅ Length validation (280 char limit)
+- ✅ Clickbait detection and removal
+- ✅ Unsupported claims filtering
+- ✅ Emoji limiting (max 1)
+- ✅ Plagiarism prevention (8-word limit)
+- ✅ Thread structure validation
+- ✅ Key detail extraction
+- ✅ Source attribution
+
+## 🔄 Automation
+
+### Daily Automation (Mac/Linux)
+Add to crontab for daily posting:
+```bash
+# Edit crontab
+crontab -e
+
+# Add daily at 9 AM
+0 9 * * * cd /path/to/XBot && npm run dev >> /var/log/xbot.log 2>&1
+```
+
+### Manual Scheduling
+```bash
+# Run once
+npm run dev
+
+# Run with specific post count
+POSTS_PER_RUN=3 npm run dev
 ```
 
 ## 📁 Project Structure
 
 ```
-XBot/
-├── src/
-│   ├── index.ts          # Main orchestrator
-│   ├── rss.ts            # RSS feed fetching
-│   ├── select.ts         # Content selection & deduplication
-│   ├── templates.ts      # Tweet template generation
-│   ├── postToX.ts        # Twitter posting functionality
-│   └── twitter.ts        # Twitter API utilities
-├── .env.example          # Environment variables template
-├── .gitignore           # Git ignore rules
-├── package.json         # Dependencies and scripts
-├── tsconfig.json        # TypeScript configuration
-└── README.md           # This file
-```
-
-## 🔧 Configuration
-
-### Environment Variables
-
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `X_API_KEY` | Twitter API Key | ✅ |
-| `X_API_SECRET` | Twitter API Secret | ✅ |
-| `X_ACCESS_TOKEN` | Twitter Access Token | ✅ |
-| `X_ACCESS_SECRET` | Twitter Access Secret | ✅ |
-| `POSTS_PER_RUN` | Number of tweets per run (1-3) | ❌ (default: 1) |
-
-### RSS Sources
-
-The bot fetches from these AI/tech RSS feeds:
-- TechCrunch AI
-- VentureBeat AI  
-- Hacker News AI
-- Google AI Blog
-
-## 📝 Tweet Templates
-
-The bot uses 8 different human-like templates:
-
-1. `🚀 {title} — {source}`
-2. `Quick take: {title}`
-3. `📰 {title} via {source}`
-4. `What do you think about {title}?`
-5. `Interesting read: {title}`
-6. `{title} — {source}`
-7. `🔥 {title}`
-8. `Thoughts on {title}?`
-
-## 🏷️ Hashtags
-
-Automatically adds 1-2 relevant hashtags from:
-- #AI, #MachineLearning, #TechNews
-- #ArtificialIntelligence, #Innovation, #Tech
-- #Future, #Automation, #DataScience, #DeepLearning
-
-## 🛠️ Development
-
-### Available Scripts
-
-```bash
-npm run dev      # Run in development mode
-npm run build    # Build TypeScript to JavaScript
-npm start        # Run built JavaScript
-npm run auth     # Twitter authentication helper
-```
-
-### Adding New RSS Sources
-
-Edit `src/rss.ts` and add to the `RSS_FEEDS` array:
-
-```typescript
-{
-  url: 'https://example.com/feed.xml',
-  source: 'Example Source'
-}
-```
-
-### Customizing Tweet Templates
-
-Edit `src/templates.ts` and modify the `TWEET_TEMPLATES` array:
-
-```typescript
-const TWEET_TEMPLATES = [
-  "Your custom template: {title}",
-  // ... other templates
-];
-```
-
-## 🔒 Security
-
-- All sensitive data is stored in `.env` file
-- `.env` is excluded from git via `.gitignore`
-- Never commit API keys or tokens
-- Use `.env.example` as a template for others
-
-## 📊 Example Output
-
-```
-🤖 XBot Orchestrator Starting...
-================================
-
-✅ Twitter API configured successfully
-👤 Authenticated as: @yourusername
-
-📰 Fetching RSS headlines...
-✅ Fetched 40 headlines from 2 sources
-
-🎯 Selecting top 1 headlines...
-✅ Selected 1 headlines for posting
-
-📝 Generated tweet (221 chars):
-"🚀 OpenAI releases GPT-5 with revolutionary capabilities — TechCrunch #AI #MachineLearning https://example.com"
-
-📤 Posting to X...
-✅ Posted successfully! Tweet ID: 1234567890
-🔗 URL: https://twitter.com/user/status/1234567890
-
-🎉 XBot run completed!
+src/
+├── index.ts          # Main orchestrator
+├── rss.ts            # RSS feed fetching
+├── select.ts         # Content selection & deduplication
+├── extractor.ts      # Article text extraction
+├── summarize.ts      # Content summarization
+├── persona.ts        # Human-like voice generation
+├── writer.ts         # Post/thread generation
+├── postToX.ts        # Twitter API integration
+├── auth.ts           # OAuth authentication
+├── test.ts           # Pipeline testing
+├── test-thread.ts    # Thread functionality testing
+└── writer.test.ts    # Quality control testing
 ```
 
 ## 🤝 Contributing
@@ -184,13 +232,35 @@ const TWEET_TEMPLATES = [
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Test thoroughly
+4. Add tests for new functionality
 5. Submit a pull request
 
 ## 📄 License
 
-MIT License - feel free to use this project for your own Twitter bots!
+ISC License - see LICENSE file for details
 
-## ⚠️ Disclaimer
+## ⚠️ Important Notes
 
-This bot is for educational and personal use. Please respect Twitter's Terms of Service and API rate limits. Use responsibly!
+- **Never commit `.env` file** - it contains sensitive API keys
+- **Rate Limits**: Respect Twitter API rate limits
+- **Content Quality**: Bot includes multiple quality controls
+- **Fallback Mechanisms**: Graceful handling of extraction failures
+- **Thread Support**: Proper reply chains for multi-tweet threads
+
+## 🆘 Troubleshooting
+
+### Common Issues
+1. **Authentication Failed**: Run `npm run auth` to complete OAuth flow
+2. **Rate Limited**: Wait for rate limit reset or reduce `POSTS_PER_RUN`
+3. **Extraction Failed**: Bot will fallback to RSS title + context
+4. **Thread Posting Failed**: Bot will fallback to single post
+
+### Debug Mode
+```bash
+# Enable verbose logging
+DEBUG=true npm run dev
+```
+
+---
+
+**Made with ❤️ for the tech community**
