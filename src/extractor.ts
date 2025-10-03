@@ -1,4 +1,4 @@
-import { extract } from '@extractus/article-extractor';
+// Dynamic import for ES Module compatibility
 import { RSSItem } from './rss';
 
 /**
@@ -48,6 +48,9 @@ export async function extractArticle(
   console.log(`📄 Extracting article from: ${url}`);
   
   try {
+    // Dynamic import for ES Module compatibility
+    const { extract } = await import('@extractus/article-extractor');
+    
     // Attempt to extract the article
     const article = await extract(url);
 
