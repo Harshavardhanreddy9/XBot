@@ -1,6 +1,7 @@
 {
   "name": "xbot",
   "version": "1.0.0",
+  "type": "module",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
@@ -10,10 +11,22 @@
     "dev-scheduler": "tsx src/scheduler.ts",
     "auth": "tsx src/auth.ts",
     "test": "tsx src/test.ts",
-    "test-pipeline": "tsx src/test.ts",
+    "test-pipeline": "NODE_ENV=test tsx tests/pipeline.test.ts",
     "test-writer": "tsx src/writer.test.ts",
-    "test-thread": "tsx src/test-thread.ts",
-    "test-run": "TEST_MODE=true tsx src/index.ts"
+    "test-thread": "NODE_ENV=test tsx tests/thread-composer.test.ts",
+    "test-run": "TEST_MODE=true tsx src/index.ts",
+    "test-extract": "tsx tests/extract.test.ts",
+    "test-schema": "NODE_ENV=test tsx tests/schema-db.test.ts",
+    "test-events": "NODE_ENV=test tsx tests/event-detect.test.ts",
+    "test-enrich": "NODE_ENV=test tsx tests/enrich.test.ts",
+    "test-publisher": "NODE_ENV=test tsx tests/publisher.test.ts",
+    "test-collector": "NODE_ENV=test tsx tests/collector.test.ts",
+    "test-style": "NODE_ENV=test tsx tests/style.test.ts",
+    "test-safety": "NODE_ENV=test tsx tests/safety.test.ts",
+    "test-media": "NODE_ENV=test tsx tests/media-preview.test.ts",
+    "test-grok": "NODE_ENV=test tsx tests/grok.flow.test.ts",
+    "test:dry": "TS_NODE_TRANSPILE_ONLY=1 node --loader ts-node/esm src/run.ts",
+    "run-pipeline": "tsx src/run.ts"
   },
   "keywords": [],
   "author": "",
@@ -22,13 +35,23 @@
   "dependencies": {
     "@extractus/article-extractor": "^8.0.20",
     "dotenv": "^17.2.2",
+    "jsdom": "^24.0.0",
+    "node-fetch": "^3.3.2",
     "ollama": "^0.6.0",
     "openai": "^5.23.1",
     "rss-parser": "^3.13.0",
-    "twitter-api-v2": "^1.27.0"
+    "sqlite3": "^5.1.6",
+    "string-similarity": "^4.0.4",
+    "twitter-api-v2": "^1.27.0",
+    "unfurl.js": "^6.1.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/jsdom": "^27.0.0",
     "@types/node": "^24.5.2",
+    "@types/sqlite3": "^3.1.11",
+    "@types/string-similarity": "^4.0.2",
+    "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
     "typescript": "^5.9.2"
   }

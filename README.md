@@ -263,4 +263,34 @@ DEBUG=true npm run dev
 
 ---
 
+## 🌐 Deploy to Render
+
+**One-click deployment with Blueprint:**
+
+1. **Push to GitHub** (if not already done)
+2. **Go to [Render.com](https://render.com)** and sign up
+3. **Click "New" → "Blueprint"**
+4. **Connect your GitHub repository**
+5. **Add environment variables** in Render dashboard:
+   ```
+   X_API_KEY=your_api_key_here
+   X_API_SECRET=your_api_secret_here
+   X_ACCESS_TOKEN=your_access_token_here
+   X_ACCESS_SECRET=your_access_secret_here
+   POSTS_PER_RUN=1
+   GITHUB_TOKEN=your_github_token_here (optional)
+   ```
+
+**Render will automatically create:**
+- **Web Service**: Health endpoint + initial pipeline run
+- **Cron Job**: Runs every 6 hours automatically
+- **Persistent Disk**: Database storage
+
+**Monitor your bot:**
+- **Health**: `https://your-app.onrender.com/health`
+- **Status**: `https://your-app.onrender.com/status`
+- **Logs**: Available in Render dashboard
+
+---
+
 **Made with ❤️ for the tech community**

@@ -1,8 +1,8 @@
-// Dynamic import for ES Module compatibility
-import { RSSItem } from './rss';
+import { RSSItem } from './rss.js';
+import { extractFullText, ExtractedArticle as NewExtractedArticle } from './extract.js';
 
 /**
- * Extracted article data
+ * Extracted article data (legacy interface for compatibility)
  */
 export interface ExtractedArticle {
   title: string;
@@ -48,34 +48,30 @@ export async function extractArticle(
   console.log(`📄 Extracting article from: ${url}`);
   
   try {
-    // Simple fallback: use RSS title as article content
-    // This avoids ES Module compatibility issues
-    const article = {
-      title: fallbackItem?.title || 'Article Title',
-      content: fallbackItem?.title || 'Article content not available'
-    };
-
-    if (article && article.title && article.content) {
-      console.log(`✅ Successfully extracted article: ${article.title}`);
+    // Use the new robust extraction system
+    const extractedArticle = await extractFullText(url, finalConfig);
+    
+    if (extractedArticle.success && extractedArticle.text.length > 100) {
+      console.log(`✅ Successfully extracted article: ${extractedArticle.title}`);
       
       return {
-        title: article.title,
-        text: article.content,
+        title: extractedArticle.title,
+        text: extractedArticle.text,
         url: url,
         source: fallbackItem?.source || new URL(url).hostname,
         success: true,
         fallbackUsed: false,
       };
     } else {
-      throw new Error('Article extraction returned empty or invalid data');
+      throw new Error('Article extraction returned insufficient content');
     }
   } catch (error) {
     console.log(`⚠️ Article extraction failed: ${error}`);
-    
+
     // Fallback to RSS data
     if (fallbackItem) {
       console.log(`🔄 Using RSS fallback data`);
-      
+
       return {
         title: fallbackItem.title,
         text: fallbackItem.title, // Use title as text since we don't have full content

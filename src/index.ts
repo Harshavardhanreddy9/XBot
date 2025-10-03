@@ -1,11 +1,11 @@
 import dotenv from 'dotenv';
-import { fetchRSSHeadlines } from './rss';
-import { selectRSSItems, getRSSStats } from './select';
-import { postTweet, testTwitterConnection, getCurrentUser } from './postToX';
-import { extractArticle } from './extractor';
-import { writePost, writePostOrThread, getWriteStats } from './writer';
-import { resetOpenerTracking } from './persona';
-import { isDuplicateTweet, addTweetToHistory, getTweetStats, cleanupOldHistory } from './tweet-history';
+import { fetchRSSHeadlines } from './rss.js';
+import { selectRSSItems, getRSSStats } from './select.js';
+import { postTweet, testTwitterConnection, getCurrentUser } from './postToX.js';
+import { extractArticle } from './extractor.js';
+import { writePost, writePostOrThread, getWriteStats } from './writer.js';
+import { resetOpenerTracking } from './persona.js';
+import { isDuplicateTweet, addTweetToHistory, getTweetStats, cleanupOldHistory } from './tweet-history.js';
 
 // Load environment variables
 dotenv.config();

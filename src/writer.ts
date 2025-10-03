@@ -1,8 +1,8 @@
 import OpenAI from 'openai';
 import { Ollama } from 'ollama';
-import { summarizeArticle } from './summarize';
-import { humanize } from './persona';
-import { ExtractedArticle } from './extractor';
+import { summarizeArticle } from './summarize.js';
+import { humanize } from './persona.js';
+import { ExtractedArticle } from './extractor.js';
 
 interface WritePostConfig {
   maxLength?: number;

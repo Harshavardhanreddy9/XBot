@@ -1,4 +1,4 @@
-import { ExtractedArticle } from './extractor';
+import { ExtractedArticle } from './extractor.js';
 
 /**
  * Persona configuration

@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: xbot-web
+    env: node
+    buildCommand: npm run build
+    startCommand: node dist/run.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BOT_RUN_INTERVAL_MINUTES
+        value: 360
+      - key: RENDER_DISK_PATH
+        value: /opt/render/project/data
+    disk:
+      name: xbot-data
+      mountPath: /opt/render/project/data
+      sizeGB: 1
+
+  - type: cron
+    name: xbot-cron
+    env: node
+    buildCommand: npm run build
+    startCommand: node dist/run.js
+    schedule: "0 */6 * * *"  # Every 6 hours
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: CRON_MODE
+        value: true
+      - key: RENDER_DISK_PATH
+        value: /opt/render/project/data
+    disk:
+      name: xbot-data
+      mountPath: /opt/render/project/data
+      sizeGB: 1

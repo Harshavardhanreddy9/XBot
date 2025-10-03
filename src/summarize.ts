@@ -1,4 +1,4 @@
-import { ExtractedArticle } from './extractor';
+import { ExtractedArticle } from './extractor.js';
 
 /**
  * Summary configuration
@@ -89,6 +89,9 @@ export async function summarizeArticle(
  */
 function cleanText(text: string): string {
   return text
+    // Remove any remaining HTML tags and entities
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&[a-zA-Z0-9#]+;/g, ' ')
     // Remove excessive whitespace
     .replace(/\s+/g, ' ')
     .trim()
@@ -102,6 +105,10 @@ function cleanText(text: string): string {
     .replace(/"[^"]{50,}"/g, '')
     // Remove claims like "first-ever" unless explicitly in title
     .replace(/\b(first-ever|first of its kind|unprecedented|never before seen|groundbreaking|revolutionary)\b/gi, '')
+    // Remove common HTML artifacts
+    .replace(/\b(target="_blank"|href=|src=|alt=|class=|id=)\b/gi, '')
+    .replace(/https?:\/\/[^\s]+/g, '') // Remove URLs
+    .replace(/www\.[^\s]+/g, '') // Remove www links
     // Clean up extra spaces
     .replace(/\s+/g, ' ')
     .trim();

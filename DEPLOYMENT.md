@@ -44,16 +44,32 @@ This guide shows you how to deploy your XBot to run automatically in the cloud.
 1. **Go to [Render.com](https://render.com)**
 2. **Sign up with GitHub**
 
-### Step 2: Deploy Web Service
-1. **Click "New" → "Web Service"**
+### Step 2: Deploy with Blueprint
+1. **Click "New" → "Blueprint"**
 2. **Connect your GitHub repository**
-3. **Configure:**
-   - **Build Command**: `npm run build`
-   - **Start Command**: `npm start`
-   - **Environment**: `Node`
+3. **Render will automatically detect `render.yaml` and deploy both services**
 
 ### Step 3: Add Environment Variables
-Add the same environment variables as Railway.
+In the Render dashboard, add these environment variables to both services:
+```
+X_API_KEY=your_api_key_here
+X_API_SECRET=your_api_secret_here
+X_ACCESS_TOKEN=your_access_token_here
+X_ACCESS_SECRET=your_access_secret_here
+POSTS_PER_RUN=1
+BOT_RUN_INTERVAL_MINUTES=360
+GITHUB_TOKEN=your_github_token_here (optional)
+```
+
+### Step 4: Services Deployed
+Render will create two services:
+- **Web Service**: Runs health endpoint and initial pipeline
+- **Cron Job**: Runs pipeline every 6 hours automatically
+
+### Step 5: Monitor Health
+- **Health Check**: `https://your-app.onrender.com/health`
+- **Status**: `https://your-app.onrender.com/status`
+- **Logs**: Available in Render dashboard
 
 ---
 
