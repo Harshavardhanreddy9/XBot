@@ -1,205 +1,133 @@
-# 🚀 XBot Deployment Guide
+# XBot Deployment Guide
 
-This guide shows you how to deploy your XBot to run automatically in the cloud.
+## 🚀 Deploy to Render (Recommended)
 
-## 🌟 Recommended: Railway (Free & Easy)
+### 1. Connect GitHub Repository
+1. Go to [Render Dashboard](https://dashboard.render.com/)
+2. Click "New +" → "Blueprint"
+3. Connect your GitHub account
+4. Select the `Harshavardhanreddy9/XBot` repository
+5. Render will automatically detect the `render.yaml` file
 
-### Step 1: Prepare Your Repository
-1. **Push your code to GitHub** (already done ✅)
-2. **Add environment variables** to your `.env` file:
-   ```env
-   BOT_RUN_INTERVAL_MINUTES=360  # Run every 6 hours
-   ```
+### 2. Configure Environment Variables
+Add these environment variables in Render dashboard:
 
-### Step 2: Deploy to Railway
-1. **Go to [Railway.app](https://railway.app)**
-2. **Sign up with GitHub**
-3. **Click "New Project" → "Deploy from GitHub repo"**
-4. **Select your XBot repository**
-5. **Railway will automatically detect Node.js and deploy**
-
-### Step 3: Configure Environment Variables
-1. **Go to your Railway project dashboard**
-2. **Click "Variables" tab**
-3. **Add all your Twitter API credentials:**
-   ```
-   X_API_KEY=your_api_key_here
-   X_API_SECRET=your_api_secret_here
-   X_ACCESS_TOKEN=your_access_token_here
-   X_ACCESS_SECRET=your_access_secret_here
-   POSTS_PER_RUN=1
-   BOT_RUN_INTERVAL_MINUTES=360
-   ```
-
-### Step 4: Deploy
-1. **Railway will automatically build and deploy**
-2. **Check the logs to see if it's working**
-3. **Your bot will now run every 6 hours automatically!**
-
----
-
-## 🔄 Alternative: Render (Free Tier)
-
-### Step 1: Create Render Account
-1. **Go to [Render.com](https://render.com)**
-2. **Sign up with GitHub**
-
-### Step 2: Deploy with Blueprint
-1. **Click "New" → "Blueprint"**
-2. **Connect your GitHub repository**
-3. **Render will automatically detect `render.yaml` and deploy both services**
-
-### Step 3: Add Environment Variables
-In the Render dashboard, add these environment variables to both services:
-```
-X_API_KEY=your_api_key_here
-X_API_SECRET=your_api_secret_here
-X_ACCESS_TOKEN=your_access_token_here
-X_ACCESS_SECRET=your_access_secret_here
-POSTS_PER_RUN=1
-BOT_RUN_INTERVAL_MINUTES=360
-GITHUB_TOKEN=your_github_token_here (optional)
+**Required:**
+```env
+X_API_KEY=your_twitter_api_key
+X_API_SECRET=your_twitter_api_secret  
+X_ACCESS_TOKEN=your_twitter_access_token
+X_ACCESS_SECRET=your_twitter_access_secret
 ```
 
-### Step 4: Services Deployed
-Render will create two services:
-- **Web Service**: Runs health endpoint and initial pipeline
-- **Cron Job**: Runs pipeline every 6 hours automatically
+**Optional (for AI features):**
+```env
+OPENAI_API_KEY=your_openai_key  # For OpenAI integration
+AI_PROVIDER=heuristic           # or 'openai' or 'ollama'
+OLLAMA_HOST=http://localhost:11434  # For local Ollama
+```
 
-### Step 5: Monitor Health
-- **Health Check**: `https://your-app.onrender.com/health`
-- **Status**: `https://your-app.onrender.com/status`
+**Configuration:**
+```env
+POSTS_PER_RUN=1               # Number of tweets per run
+MAX_TWEETS_PER_DAY=5          # Daily tweet limit
+TEST_MODE=false               # Set to true for testing
+```
+
+### 3. Deploy
+1. Click "Apply" in Render dashboard
+2. Render will:
+   - Build the project (`npm run build`)
+   - Deploy web service with health endpoint
+   - Set up cron job to run every 6 hours
+   - Create persistent disk for database
+
+### 4. Monitor Deployment
+- **Web Service**: Provides health endpoint at `/health`
+- **Cron Job**: Runs every 6 hours automatically
 - **Logs**: Available in Render dashboard
+- **Database**: Persisted on disk
 
----
+## 🔧 Local Development
 
-## ⚙️ Configuration Options
+```bash
+# Install dependencies
+npm install
 
-### Run Frequency
-```env
-# Run every hour
-BOT_RUN_INTERVAL_MINUTES=60
+# Set up environment
+cp .env.example .env
+# Edit .env with your Twitter API keys
 
-# Run every 6 hours (recommended)
-BOT_RUN_INTERVAL_MINUTES=360
+# Run in development mode
+npm run dev
 
-# Run every 12 hours
-BOT_RUN_INTERVAL_MINUTES=720
-
-# Run once per day
-BOT_RUN_INTERVAL_MINUTES=1440
+# Run tests
+npm test
+npm run test-grok
+npm run test-media
 ```
 
-### Post Frequency
-```env
-# Post 1 tweet per run
-POSTS_PER_RUN=1
+## 📊 Monitoring
 
-# Post 2 tweets per run (if you have higher rate limits)
-POSTS_PER_RUN=2
-```
+### Health Endpoints
+- `GET /health` - Basic health check
+- `GET /status` - Detailed status with statistics
 
----
+### Logs
+- Check Render dashboard for real-time logs
+- Look for "HEALTH LOG" entries for monitoring data
 
-## 📊 Monitoring Your Bot
-
-### Railway Dashboard
-- **Logs**: See real-time bot activity
-- **Metrics**: CPU, memory usage
-- **Deployments**: Track updates
-
-### Check Bot Status
-1. **Look at your Twitter account** - tweets should appear automatically
-2. **Check Railway logs** - see when bot runs
-3. **Monitor rate limits** - bot handles this automatically
-
----
+### Database
+- SQLite database stored in persistent disk
+- Contains items, events, tweets, and skip reasons
+- Automatically backed up with disk snapshots
 
 ## 🛠️ Troubleshooting
 
-### Bot Not Running
-1. **Check Railway logs** for errors
-2. **Verify environment variables** are set correctly
-3. **Check Twitter API credentials**
+### Common Issues
 
-### Rate Limit Issues
-- **Bot automatically handles rate limits**
-- **Reduces frequency if needed**
-- **Logs will show rate limit status**
+1. **Database Permission Error**
+   - Ensure `RENDER_DISK_PATH` is set correctly
+   - Check disk mount permissions
 
-### Deployment Issues
-1. **Check build logs** in Railway
-2. **Ensure all dependencies** are in package.json
-3. **Verify TypeScript compilation** works locally
+2. **Twitter API Rate Limits**
+   - Bot has built-in rate limiting
+   - Check daily tweet limits in logs
 
----
+3. **RSS Feed Errors**
+   - Some feeds may be temporarily unavailable
+   - Bot continues with available feeds
 
-## 🔧 Local Testing
+4. **Build Failures**
+   - Check Node.js version compatibility
+   - Ensure all dependencies are in package.json
 
-### Test Scheduler Locally
-```bash
-# Test the scheduler
-npm run dev-scheduler
-
-# Test single run
-npm run start-once
+### Debug Mode
+```env
+TEST_MODE=true  # Prevents actual posting
+DEBUG=true      # Enables verbose logging
 ```
 
-### Build and Test
-```bash
-# Build the project
-npm run build
+## 🔄 Updates
 
-# Test production build
-npm start
-```
+To update the deployed bot:
+1. Push changes to GitHub
+2. Render automatically redeploys
+3. Check logs for any issues
 
----
+## 📈 Scaling
 
-## 📈 Scaling Options
+- **Free Tier**: 1 web service + 1 cron job
+- **Paid Plans**: Multiple services, custom domains
+- **Database**: Upgrade disk size as needed
+- **Monitoring**: Add external monitoring services
 
-### Free Tier Limits
-- **Railway**: 500 hours/month free
-- **Render**: 750 hours/month free
-- **Both**: Sufficient for bot running every 6 hours
+## 🎯 Production Checklist
 
-### Paid Options
-- **Railway Pro**: $5/month for unlimited
-- **Render**: $7/month for always-on
-- **AWS/GCP**: More complex but powerful
-
----
-
-## 🎯 Best Practices
-
-### Environment Variables
-- **Never commit `.env` file**
-- **Use Railway/Render environment variables**
-- **Keep secrets secure**
-
-### Monitoring
-- **Check logs regularly**
-- **Monitor Twitter account**
-- **Set up alerts if needed**
-
-### Updates
-- **Push changes to GitHub**
-- **Railway auto-deploys**
-- **Test locally first**
-
----
-
-## 🚀 Quick Start Commands
-
-```bash
-# Test locally
-npm run dev-scheduler
-
-# Build for production
-npm run build
-
-# Deploy to Railway
-# (Just push to GitHub - Railway auto-deploys)
-```
-
-Your bot will now run automatically in the cloud! 🎉
+- [ ] Twitter API keys configured
+- [ ] Environment variables set
+- [ ] Health endpoints responding
+- [ ] Cron job running successfully
+- [ ] Database persisting data
+- [ ] Logs showing successful runs
+- [ ] Test tweets posted successfully
