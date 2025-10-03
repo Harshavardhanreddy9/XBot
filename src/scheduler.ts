@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { runXBot } from './index';
+import { runXBot } from './index.js';
 
 dotenv.config();
 

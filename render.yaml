@@ -2,6 +2,7 @@ services:
   - type: web
     name: xbot-web
     env: node
+    nodeVersion: 20
     buildCommand: npm run build
     startCommand: node dist/run.js
     healthCheckPath: /health
@@ -20,6 +21,7 @@ services:
   - type: cron
     name: xbot-cron
     env: node
+    nodeVersion: 20
     buildCommand: npm run build
     startCommand: node dist/run.js
     schedule: "0 */6 * * *"  # Every 6 hours
