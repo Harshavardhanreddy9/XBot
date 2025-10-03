@@ -5,6 +5,7 @@ import { postTweet, testTwitterConnection, getCurrentUser } from './postToX';
 import { extractArticle } from './extractor';
 import { writePost, writePostOrThread, getWriteStats } from './writer';
 import { resetOpenerTracking } from './persona';
+import { isDuplicateTweet, addTweetToHistory, getTweetStats, cleanupOldHistory } from './tweet-history';
 
 // Load environment variables
 dotenv.config();
@@ -130,12 +131,36 @@ export function createFinalTweet(humanizedSummary: string, source: string, url: 
 }
 
 /**
+ * Check if we've hit daily posting limit
+ */
+function checkDailyLimit(): boolean {
+  const dailyLimit = parseInt(process.env.DAILY_POST_LIMIT || '5', 10);
+  const stats = getTweetStats();
+  
+  if (stats.recentTweets >= dailyLimit) {
+    console.log(`🚫 Daily posting limit reached (${stats.recentTweets}/${dailyLimit})`);
+    console.log(`📅 Last tweet: ${stats.lastTweetDate ? new Date(stats.lastTweetDate).toLocaleString() : 'Never'}`);
+    return true;
+  }
+  
+  console.log(`📊 Daily limit check: ${stats.recentTweets}/${dailyLimit} tweets used`);
+  return false;
+}
+
+/**
  * Main XBot orchestrator function
  * Handles the complete workflow: fetch → select → format → post
  */
 export async function runXBot(): Promise<void> {
   console.log('🤖 XBot Orchestrator Starting...');
   console.log('================================\n');
+
+  // Check if we're in test mode
+  const testMode = process.env.TEST_MODE === 'true';
+  if (testMode) {
+    console.log('🧪 TEST MODE ENABLED - No tweets will be posted');
+    console.log('===============================================\n');
+  }
 
   try {
     // Step 1: Check Twitter configuration
@@ -188,6 +213,15 @@ export async function runXBot(): Promise<void> {
     }
 
     console.log(`✅ Selected ${selectedHeadlines.length} headlines for posting\n`);
+
+    // Step 3.5: Check daily posting limit
+    if (checkDailyLimit()) {
+      console.log('⏭️ Skipping posting due to daily limit');
+      return;
+    }
+
+    // Step 3.6: Clean up old tweet history
+    cleanupOldHistory();
 
     // Step 4: Process each selected headline
     console.log('📝 Processing selected headlines...');
@@ -249,18 +283,37 @@ export async function runXBot(): Promise<void> {
           console.log(`📝 Generated post (${writeResult.length} chars) using ${writeResult.provider}: ${writeResult.content}`);
         }
         
-        // Step 4c: Create final tweets with URLs
-        console.log('📝 Creating final tweet(s)...');
-        const finalTweets = threadResult.tweets.map(tweet => 
-          createFinalTweet(tweet, item.source, item.link)
-        );
-        
-        finalTweets.forEach((tweet, index) => {
-          console.log(`📝 Tweet ${index + 1} (${tweet.length} chars):`);
-          console.log(`"${tweet}"`);
-        });
+          // Step 4c: Create final tweets with URLs
+          console.log('📝 Creating final tweet(s)...');
+          const finalTweets = threadResult.tweets.map(tweet =>
+            createFinalTweet(tweet, item.source, item.link)
+          );
+
+          finalTweets.forEach((tweet, index) => {
+            console.log(`📝 Tweet ${index + 1} (${tweet.length} chars):`);
+            console.log(`"${tweet}"`);
+          });
+
+          // Step 4c.5: Check for duplicates
+          const enableDuplicateCheck = process.env.ENABLE_DUPLICATE_CHECK !== 'false';
+          if (enableDuplicateCheck) {
+            const isDuplicate = finalTweets.some(tweet => isDuplicateTweet(tweet));
+            if (isDuplicate) {
+              console.log('🚫 Skipping duplicate tweet(s)');
+              continue; // Skip to next headline
+            }
+          }
         
         // Step 4d: Post tweets with error handling
+        if (testMode) {
+          console.log('🧪 TEST MODE: Would post tweet(s) but skipping actual posting');
+          console.log('📊 Tweet stats:');
+          finalTweets.forEach((tweet, index) => {
+            console.log(`   Tweet ${index + 1}: ${tweet.length} chars`);
+          });
+          continue; // Skip actual posting
+        }
+
         console.log('📤 Posting to X...');
         let postSuccess = false;
         
@@ -275,13 +328,16 @@ export async function runXBot(): Promise<void> {
               console.log(`📤 Posting tweet ${i + 1}/${finalTweets.length}...`);
               
               try {
-                const tweetId = await postTweet(tweet, previousTweetId);
-                postedTweets.push(tweetId);
-                previousTweetId = tweetId;
-                postSuccess = true;
-                
-                console.log(`✅ Tweet ${i + 1} posted! ID: ${tweetId}`);
-                console.log(`🔗 URL: https://twitter.com/user/status/${tweetId}`);
+                  const tweetId = await postTweet(tweet, previousTweetId);
+                  postedTweets.push(tweetId);
+                  previousTweetId = tweetId;
+                  postSuccess = true;
+
+                  // Add to tweet history
+                  addTweetToHistory(tweetId, tweet, item.link, item.source);
+
+                  console.log(`✅ Tweet ${i + 1} posted! ID: ${tweetId}`);
+                  console.log(`🔗 URL: https://twitter.com/user/status/${tweetId}`);
                 
                 // Add delay between thread tweets
                 if (i < finalTweets.length - 1) {
@@ -293,12 +349,16 @@ export async function runXBot(): Promise<void> {
               }
             }
           } else {
-            // Post single tweet
-            const tweetId = await postTweet(finalTweets[0]);
-            postedTweets.push(tweetId);
-            postSuccess = true;
-            console.log(`✅ Posted successfully! Tweet ID: ${tweetId}`);
-            console.log(`🔗 URL: https://twitter.com/user/status/${tweetId}`);
+              // Post single tweet
+              const tweetId = await postTweet(finalTweets[0]);
+              postedTweets.push(tweetId);
+              postSuccess = true;
+
+              // Add to tweet history
+              addTweetToHistory(tweetId, finalTweets[0], item.link, item.source);
+
+              console.log(`✅ Posted successfully! Tweet ID: ${tweetId}`);
+              console.log(`🔗 URL: https://twitter.com/user/status/${tweetId}`);
           }
         } catch (postError) {
           console.error(`❌ Posting failed:`, postError);
@@ -346,6 +406,16 @@ export async function runXBot(): Promise<void> {
     console.log(`📊 RSS headlines fetched: ${allHeadlines.length}`);
     console.log(`🎯 Headlines selected: ${selectedHeadlines.length}`);
     console.log(`📤 Tweets posted: ${postedTweets.length}`);
+    
+    // Show tweet history stats
+    const tweetStats = getTweetStats();
+    console.log('\n📈 Tweet History Stats:');
+    console.log(`   Total tweets: ${tweetStats.totalTweets}`);
+    console.log(`   Recent tweets (7 days): ${tweetStats.recentTweets}`);
+    console.log(`   Sources: ${tweetStats.uniqueSources.join(', ')}`);
+    if (tweetStats.lastTweetDate) {
+      console.log(`   Last tweet: ${new Date(tweetStats.lastTweetDate).toLocaleString()}`);
+    }
     
     // Show write statistics
     if (writeResults.length > 0) {

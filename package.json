@@ -12,7 +12,8 @@
     "test": "tsx src/test.ts",
     "test-pipeline": "tsx src/test.ts",
     "test-writer": "tsx src/writer.test.ts",
-    "test-thread": "tsx src/test-thread.ts"
+    "test-thread": "tsx src/test-thread.ts",
+    "test-run": "TEST_MODE=true tsx src/index.ts"
   },
   "keywords": [],
   "author": "",
