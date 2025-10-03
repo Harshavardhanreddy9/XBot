@@ -295,6 +295,7 @@ async function writeWithHeuristic(
       text,
       source,
       url: '', // Not needed for this use case
+      fallbackUsed: false,
     };
 
     // Use existing summarize and humanize functions

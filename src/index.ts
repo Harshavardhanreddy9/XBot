@@ -133,7 +133,7 @@ export function createFinalTweet(humanizedSummary: string, source: string, url: 
  * Main XBot orchestrator function
  * Handles the complete workflow: fetch → select → format → post
  */
-async function runXBot(): Promise<void> {
+export async function runXBot(): Promise<void> {
   console.log('🤖 XBot Orchestrator Starting...');
   console.log('================================\n');
 

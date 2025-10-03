@@ -8,6 +8,7 @@ export interface ExtractedArticle {
   title: string;
   text: string;
   url: string;
+  source: string;
   success: boolean;
   fallbackUsed: boolean;
 }
@@ -48,10 +49,7 @@ export async function extractArticle(
   
   try {
     // Attempt to extract the article
-    const article = await extract(url, {
-      timeout: finalConfig.timeout,
-      userAgent: finalConfig.userAgent,
-    });
+    const article = await extract(url);
 
     if (article && article.title && article.content) {
       console.log(`✅ Successfully extracted article: ${article.title}`);
@@ -60,6 +58,7 @@ export async function extractArticle(
         title: article.title,
         text: article.content,
         url: url,
+        source: fallbackItem?.source || new URL(url).hostname,
         success: true,
         fallbackUsed: false,
       };
@@ -77,6 +76,7 @@ export async function extractArticle(
         title: fallbackItem.title,
         text: fallbackItem.title, // Use title as text since we don't have full content
         url: fallbackItem.link,
+        source: fallbackItem.source,
         success: false,
         fallbackUsed: true,
       };
@@ -157,6 +157,7 @@ export async function extractArticleWithRetry(
       title: fallbackItem.title,
       text: fallbackItem.title,
       url: fallbackItem.link,
+      source: fallbackItem.source,
       success: false,
       fallbackUsed: true,
     };

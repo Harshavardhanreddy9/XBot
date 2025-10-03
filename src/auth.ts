@@ -58,7 +58,7 @@ async function authenticateTwitter() {
 
     // Exchange PIN for access tokens
     console.log('\n🔄 Exchanging PIN for access tokens...');
-    const { client: loggedClient, accessToken, accessSecret } = await client.loginWithPin(pin);
+    const { client: loggedClient, accessToken, accessSecret } = await client.login(pin);
 
     console.log('✅ Authentication successful!');
     console.log('\n📋 Add these to your .env file:');
