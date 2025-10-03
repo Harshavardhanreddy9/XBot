@@ -1,5 +1,46 @@
 # Local AI Setup Guide for XBot
 
+## 🏆 Best Open-Source Models (October 2025)
+
+### Top Tier Models (Recommended)
+```bash
+# 🥇 BEST OVERALL - DeepSeek R1 (Rivals GPT-4!)
+ollama pull deepseek-r1:7b
+
+# 🥈 Meta's Latest - Llama 3.2 (40+ languages)
+ollama pull llama3.2:8b
+
+# 🥉 Alibaba's Qwen3 (119 languages, Codeforces 2056)
+ollama pull qwen3:7b
+
+# 🏅 TII's Falcon 2 (Multimodal, 5T tokens)
+ollama pull falcon2:7b
+```
+
+### High Performance Models
+```bash
+# Meta's largest model (requires 40GB+ RAM)
+ollama pull llama3.1:70b
+
+# Enhanced Qwen3 (14B parameters)
+ollama pull qwen3:14b
+
+# Mistral's latest (improved instruction following)
+ollama pull mistral-nemo:12b
+```
+
+### Efficient Models (Lower Resources)
+```bash
+# LMSYS optimized for dialogue
+ollama pull vicuna:13b
+
+# Meta's efficient 8B model
+ollama pull llama3.1:8b
+
+# Microsoft's fast small model
+ollama pull phi3:3.8b
+```
+
 ## Option 1: Ollama (Recommended - Free & Open Source)
 
 ### Installation
@@ -19,10 +60,10 @@ curl -fsSL https://ollama.ai/install.sh | sh
 # Start Ollama service
 ollama serve
 
-# Pull a model (in another terminal)
-ollama pull llama3.2:3b  # Small, fast model
-# or
-ollama pull llama3.2:1b  # Even smaller
+# Pull the best model (in another terminal)
+ollama pull deepseek-r1:7b  # 🏆 Best model October 2025
+# or for faster performance:
+ollama pull llama3.2:8b     # Meta's latest
 ```
 
 ### Configure XBot
@@ -58,17 +99,32 @@ AI_PROVIDER=ollama npm run dev
 AI_PROVIDER=custom OPENAI_BASE_URL=http://localhost:1234/v1 npm run dev
 ```
 
-## Model Recommendations
+## Model Recommendations by Use Case
 
-- **llama3.2:1b** - Fastest, good for basic tasks
-- **llama3.2:3b** - Balanced speed/quality
-- **llama3.2:8b** - Higher quality, slower
-- **phi3:3.8b** - Microsoft's efficient model
+### 🏆 Best Overall (October 2025)
+- **deepseek-r1:7b** - Rivals GPT-4, excellent reasoning
+- **llama3.2:8b** - Meta's latest, 40+ languages
+- **qwen3:7b** - Alibaba's model, 119 languages
+
+### ⚡ Fast & Efficient
+- **phi3:3.8b** - Microsoft's fast small model
+- **llama3.1:8b** - Meta's efficient 8B model
+- **vicuna:13b** - Optimized for dialogue
+
+### 🧠 High Performance
+- **llama3.1:70b** - Meta's largest (requires 40GB+ RAM)
+- **qwen3:14b** - Enhanced reasoning
+- **mistral-nemo:12b** - Improved instruction following
+
+### 🔧 Specialized
+- **codellama:7b** - Code generation
+- **bloom:7b** - Multilingual (46 languages)
 
 ## Performance Notes
 
-- 1B models: ~2-3 seconds per summary
-- 3B models: ~5-8 seconds per summary  
-- 8B models: ~15-30 seconds per summary
+- **3B models**: ~2-3 seconds per summary
+- **7B models**: ~5-8 seconds per summary  
+- **8B models**: ~8-12 seconds per summary
+- **14B+ models**: ~15-30 seconds per summary
 
-For a Twitter bot, 1B or 3B models are recommended for speed.
+**For XBot**: 7B models offer the best balance of quality and speed.
