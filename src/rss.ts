@@ -15,16 +15,20 @@ const RSS_FEEDS = [
     source: 'TechCrunch AI'
   },
   {
-    url: 'https://venturebeat.com/ai/feed/',
-    source: 'VentureBeat AI'
+    url: 'https://feeds.feedburner.com/venturebeat/SZYF',
+    source: 'VentureBeat'
   },
   {
     url: 'https://hnrss.org/newest?q=AI',
     source: 'Hacker News AI'
   },
   {
-    url: 'https://ai.googleblog.com/feeds/posts/default',
+    url: 'https://feeds.feedburner.com/blogspot/gJZg',
     source: 'Google AI Blog'
+  },
+  {
+    url: 'https://feeds.feedburner.com/techcrunch/startups',
+    source: 'TechCrunch Startups'
   }
 ];
 
